@@ -1,7 +1,13 @@
+#!/usr/bin/env python
+# -*- coding: utf-8
+
 from datetime import datetime
 from pymongo.connection import Connection
 from bson.objectid import ObjectId
  
+import os.path
+import tornado.auth
+import tornado.escape
 import tornado.httpserver
 import tornado.ioloop
 import tornado.options
@@ -10,17 +16,34 @@ import tornado.web
 from tornado.options import define, options
  
 define("port", default=8888, type=int)
- 
+define("facebook_api_key", help="your Facebook application API key",
+       default="1408863776041585")
+define("facebook_secret", help="your Facebook application secret",
+       default="056d1d09366b04aaf82d307124dc852f")
  
 class Application(tornado.web.Application):
     def __init__(self):
-        handlers = [
-            (r"/", MainHandler),
-        ]
- 
+
         settings = dict(
             autoescape=None,
+            cookie_secret="Hé, tu sais quoi? je vais me le générer à la main, tant pis pour l'entropie156851huguyfcvbnnjqdjsknbhgyuhjb",
+            template_path=os.path.join(os.path.dirname(__file__), "templates"),
+            static_path=os.path.join(os.path.dirname(__file__), "static"),
+            xsrf_cookies=True,
+            facebook_api_key=options.facebook_api_key,
+            facebook_secret=options.facebook_secret,
+            debug=True,
         )
+
+        handlers = [
+            (r"/", MainHandler),
+            (r"/signup/facebook", FacebookSignUpHandler),
+            (r"/login", AuthHandler),
+            (r"/login/facebook", FacebookAuthHandler),
+            (r"/(signup/index.html)", tornado.web.StaticFileHandler, {"path" :settings['static_path']}),
+            (r"/post", MainHandler),
+        ]
+ 
         tornado.web.Application.__init__(self, handlers, **settings)
  
         self.con = Connection('localhost', 27017)
