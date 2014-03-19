@@ -1,0 +1,6 @@
+Fuse the two files together 
+
+Have users in mongoDB:
+    - a page to select one's username on signup
+    - an author field on messages
+    - a test to see if you are logged in as a signedup user
