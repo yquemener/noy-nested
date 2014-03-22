@@ -6,11 +6,12 @@
   </head>
   <body>
     <div id="body">
-      <form action="/signup/facebook">
-	  <div>Choisissez un nom d'utilisateur</div>
-	  <br/>
-	  <input name="username" type="text"/><br/>
-	  <input type="submit"/>
+      <form action="/signup/facebook" method=get>
+				<div>Choisissez un nom d'utilisateur</div>
+				<br/>
+				<input name="username" type="text"/><br/>
+				<input type="submit" value="Sign up using Facebook"/>
+				{% raw xsrf_form_html() %}
       </form>
     </div>
   </body>

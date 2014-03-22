@@ -23,11 +23,10 @@ define("facebook_secret", help="your Facebook application secret",
                           default="056d1d09366b04aaf82d307124dc852f")
 
 define("home_url", help="The URL the website will be at", 
-                   default="http://localhost:8888/auth/login")  
+                   default="http://localhost:8888")  
  
 class Application(tornado.web.Application):
     def __init__(self):
-
         settings = dict(
             autoescape=None,
             cookie_secret="Hé, tu sais quoi? je vais me le générer à la main, tant pis pour l'entropie156851huguyfcvbnnjqdjsknbhgyuhjb",
@@ -47,7 +46,7 @@ class Application(tornado.web.Application):
             (r"/login/facebook", FacebookAuthHandler),
             (r"/logout", AuthLogoutHandler),
             (r"/signup", SignupHandler),
-            (r"/post", MainHandler),
+            (r"/post", PostHandler),
         ]
  
         tornado.web.Application.__init__(self, handlers, **settings)
@@ -67,45 +66,108 @@ class SignupHandler(BaseHandler):
         self.render("signup.html")
 
 class FacebookSignUpHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
-    @tornado.web.asynchronous
-    def get(self):
-        my_url = self.settings["home_url"]+"/auth/login"
-        if self.get_argument("code", False):
-            self.get_authenticated_user(
-                redirect_uri=my_url,
-                client_id=self.settings["facebook_api_key"],
-                client_secret=self.settings["facebook_secret"],
-                code=self.get_argument("code"),
-                callback=self._on_auth)
-            return
-        self.authorize_redirect(redirect_uri=my_url,
-                                client_id=self.settings["facebook_api_key"],
-                                extra_params={"scope": "read_stream"})
-                                
-    def _on_auth(self, user):
-        if not user:
-            raise tornado.web.HTTPError(500, "Facebook auth failed")
-        self.set_secure_cookie("noy_user", tornado.escape.json_encode(user))
-        self.redirect("/")                                
+	@tornado.web.asynchronous
+	def get(self):
+		requested_username = self.get_argument("username", default=None, strip=False)
+		
+		my_url = self.settings["home_url"]+"/signup/facebook?username="+requested_username
+		if self.get_argument("code", False):
+			self.get_authenticated_user(
+							redirect_uri=my_url,
+							client_id=self.settings["facebook_api_key"],
+							client_secret=self.settings["facebook_secret"],
+							code=self.get_argument("code"),
+							callback=self._on_auth)
+			return
+		self.authorize_redirect(redirect_uri=my_url,
+														client_id=self.settings["facebook_api_key"],
+														extra_params={"scope": "read_stream"})
+		
+	def _on_auth(self, user):
+		if not user:
+			raise tornado.web.HTTPError(500, "Facebook auth failed")
+		
+		requested_username = self.get_argument("username", default=None, strip=False)
+		db=self.application.database
+		userobj = db.users.find_one({"facebook_id": user["id"] })
+		userobj2 = db.users.find_one({"name": requested_username })
+		if(userobj!=None):
+			self.write("A user with this facebook ID already exists: " + str(userobj["name"]))
+			self.finish()
+			return
+
+		if(userobj2!=None):
+			self.write("A user with this name already exists.")
+			self.finish()
+			return
+		db.users.insert({'name': requested_username, 'facebook_id': user['id']})
+
+		self.redirect("/login/facebook")
    
 class AuthHandler(tornado.web.RequestHandler):
     def get(self):
-        pass
+        self.redirect("/login/facebook")
 
-class FacebookAuthHandler(tornado.web.RequestHandler):
-    def get(self):
-        pass
-
+class FacebookAuthHandler(tornado.web.RequestHandler, tornado.auth.FacebookGraphMixin):
+	@tornado.web.asynchronous
+	def get(self):
+		my_url = self.settings["home_url"]+"/login/facebook"
+		if self.get_argument("code", False):
+			self.get_authenticated_user(
+							redirect_uri=my_url,
+							client_id=self.settings["facebook_api_key"],
+							client_secret=self.settings["facebook_secret"],
+							code=self.get_argument("code"),
+							callback=self._on_auth)
+			return
+		self.authorize_redirect(redirect_uri=my_url,
+														client_id=self.settings["facebook_api_key"],
+														extra_params={"scope": "read_stream"})
+		
+	def _on_auth(self, user):
+		if not user:
+			raise tornado.web.HTTPError(500, "Facebook auth failed")
+		db=self.application.database
+		userobj = db.users.find_one({"facebook_id": user["id"] })
+		if userobj==None:
+			raise tornado.web.HTTPError(500, "Unknown user. Please sign up.")
+		self.set_secure_cookie("noy_user", tornado.escape.json_encode(userobj["name"]))
+		self.redirect("/")
+		
+		
 class AuthLogoutHandler(tornado.web.RequestHandler):
     def get(self):
         self.clear_cookie("noy_user")
         self.redirect("/")
 
+class PostHandler(BaseHandler):
+	@tornado.web.authenticated
+	def post(self):
+		db=self.application.database
+		content = self.request.arguments.get("content", [None])[0]
+		parent = self.request.arguments.get("parent", [None])[0]
+		superparent = self.request.arguments.get("superparent", [None])[0]
+
+		new_comment = {
+			"content" : content,
+			"time" : datetime.utcnow(),
+			"author" : self.get_current_user()
+		}
+
+		if parent != None:
+			new_comment["parent"] = parent
+		if superparent != None:
+			new_comment["superparent"] = superparent
+		db.comments.insert(new_comment)
+		self.redirect("/")
+
+        
 class MainHandler(BaseHandler):
 	def recurseComment(self, comment, margin):
 		if comment == None:
 			return
 		self.write(margin + comment["content"])
+		#self.write("&nbsp;"*10 + str(comment.get("time",0)))
 		self.write("\n<br/>\n")
 		for c in comment.get("children", []):
 			self.recurseComment(c, margin + "___")
@@ -116,9 +178,12 @@ class MainHandler(BaseHandler):
 		comments = db["comments"].find()
 		if self.get_current_user() == None:
 			self.write("Not Logged in.<br/>\n")
+			self.write("<a href='/signup'>Sign up</a> &nbsp; <a href='/login'>Log in</a> ")
 		else:
 			self.write("Logged in as "+str(self.get_current_user())+"<br/>\n")
+			self.write("<a href='/logout'>Log out</a>")
 		self.write("<hr>" + str(self.settings) + "<hr>")
+		self.write(str(self.get_secure_cookie("noy_auth_facebook"))+"<hr>")
 		d = dict()
 		for c in comments:
 			d[str(c["_id"])] = c
@@ -131,28 +196,16 @@ class MainHandler(BaseHandler):
 				else:
 					d[par]["children"] = [v]
 		for (k,v) in d.items():
+			if v.has_key("children"):
+				v["children"].sort(cmp=lambda x,y:cmp(str(x.get("time",0)), str(y.get("time",0))))
+		a=d.values()
+		a.sort(cmp=lambda x,y:cmp(str(x.get("time",0)), str(y.get("time",0))))
+		for v in a:
 			if not v.has_key("parent"):
 				self.recurseComment(v, "")
-		
+		self.write("<hr>")
+		self.render("post.html")
 
-	def post(self):
-		db=self.application.database
-		content = self.request.arguments.get("content", None)[0]
-		parent = self.request.arguments.get("parent", None)[0]
-		superparent = self.request.arguments.get("superparent", None)[0]
-
-		new_comment = {
-			"content" : content,
-			"time" : datetime.utcnow(),
-		}
-
-		if parent != None:
-			new_comment["parent"] = parent
-
-		if superparent != None:
-			new_comment["superparent"] = superparent
-
-		db.comments.insert(new_comment)
 
  
 def main():
