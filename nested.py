@@ -17,9 +17,13 @@ from tornado.options import define, options
  
 define("port", default=8888, type=int)
 define("facebook_api_key", help="your Facebook application API key",
-       default="1408863776041585")
+                           default="1408863776041585")
+
 define("facebook_secret", help="your Facebook application secret",
-       default="056d1d09366b04aaf82d307124dc852f")
+                          default="056d1d09366b04aaf82d307124dc852f")
+
+define("home_url", help="The URL the website will be at", 
+                   default="http://localhost:8888/auth/login")  
  
 class Application(tornado.web.Application):
     def __init__(self):
@@ -32,6 +36,7 @@ class Application(tornado.web.Application):
             xsrf_cookies=True,
             facebook_api_key=options.facebook_api_key,
             facebook_secret=options.facebook_secret,
+            home_url=options.home_url,
             debug=True,
         )
 
@@ -40,7 +45,8 @@ class Application(tornado.web.Application):
             (r"/signup/facebook", FacebookSignUpHandler),
             (r"/login", AuthHandler),
             (r"/login/facebook", FacebookAuthHandler),
-            (r"/(signup/index.html)", tornado.web.StaticFileHandler, {"path" :settings['static_path']}),
+            (r"/logout", AuthLogoutHandler),
+            (r"/signup", SignupHandler),
             (r"/post", MainHandler),
         ]
  
@@ -50,7 +56,52 @@ class Application(tornado.web.Application):
         self.database = self.con["nested"]
  
  
-class MainHandler(tornado.web.RequestHandler):
+class BaseHandler(tornado.web.RequestHandler):
+    def get_current_user(self):
+        user_json = self.get_secure_cookie("noy_user")
+        if not user_json: return None
+        return tornado.escape.json_decode(user_json)
+        
+class SignupHandler(BaseHandler):
+    def get(self):
+        self.render("signup.html")
+
+class FacebookSignUpHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
+    @tornado.web.asynchronous
+    def get(self):
+        my_url = self.settings["home_url"]+"/auth/login"
+        if self.get_argument("code", False):
+            self.get_authenticated_user(
+                redirect_uri=my_url,
+                client_id=self.settings["facebook_api_key"],
+                client_secret=self.settings["facebook_secret"],
+                code=self.get_argument("code"),
+                callback=self._on_auth)
+            return
+        self.authorize_redirect(redirect_uri=my_url,
+                                client_id=self.settings["facebook_api_key"],
+                                extra_params={"scope": "read_stream"})
+                                
+    def _on_auth(self, user):
+        if not user:
+            raise tornado.web.HTTPError(500, "Facebook auth failed")
+        self.set_secure_cookie("noy_user", tornado.escape.json_encode(user))
+        self.redirect("/")                                
+   
+class AuthHandler(tornado.web.RequestHandler):
+    def get(self):
+        pass
+
+class FacebookAuthHandler(tornado.web.RequestHandler):
+    def get(self):
+        pass
+
+class AuthLogoutHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.clear_cookie("noy_user")
+        self.redirect("/")
+
+class MainHandler(BaseHandler):
 	def recurseComment(self, comment, margin):
 		if comment == None:
 			return
@@ -63,7 +114,11 @@ class MainHandler(tornado.web.RequestHandler):
 		db=self.application.database
 
 		comments = db["comments"].find()
-
+		if self.get_current_user() == None:
+			self.write("Not Logged in.<br/>\n")
+		else:
+			self.write("Logged in as "+str(self.get_current_user())+"<br/>\n")
+		self.write("<hr>" + str(self.settings) + "<hr>")
 		d = dict()
 		for c in comments:
 			d[str(c["_id"])] = c
