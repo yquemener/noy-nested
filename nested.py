@@ -7,6 +7,7 @@ from bson.objectid import ObjectId
  
 import os.path
 import tornado.auth
+import tornado.template
 import tornado.escape
 import tornado.httpserver
 import tornado.ioloop
@@ -146,12 +147,12 @@ class PostHandler(BaseHandler):
 	@tornado.web.authenticated
 	def post(self):
 		db=self.application.database
-		content = self.request.arguments.get("content", [None])[0]
+		content = self.request.arguments.get("content", [""])[0]
 		parent = self.request.arguments.get("parent", [None])[0]
 		superparent = self.request.arguments.get("superparent", [None])[0]
 
 		# TODO: add some bleach
-		content = markdown(content.decode("utf-8"), safe_mode="escape")
+		content = markdown(content.decode("utf-8"), safe_mode="escape").rstrip("</p>").lstrip("<p>")
 		new_comment = {
 			"content" : content,
 			"time" : datetime.utcnow(),
@@ -176,9 +177,10 @@ class MainHandler(BaseHandler):
 		for c in comment.get("children", []):
 			self.recurseComment(c, margin + "___")
 
+	@tornado.web.asynchronous
 	def get(self):
+		self.write(self.render_string("header.html"))
 		db=self.application.database
-
 		comments = db["comments"].find()
 		if self.get_current_user() == None:
 			self.write("Not Logged in.<br/>\n")
@@ -209,7 +211,6 @@ class MainHandler(BaseHandler):
 				self.recurseComment(v, "")
 		self.write("<hr>")
 		self.render("post.html")
-
 
  
 def main():
