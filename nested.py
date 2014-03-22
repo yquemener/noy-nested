@@ -12,6 +12,8 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import tornado.web
+
+from 	markdown import markdown
  
 from tornado.options import define, options
  
@@ -148,6 +150,8 @@ class PostHandler(BaseHandler):
 		parent = self.request.arguments.get("parent", [None])[0]
 		superparent = self.request.arguments.get("superparent", [None])[0]
 
+		# TODO: add some bleach
+		content = markdown(content.decode("utf-8"), safe_mode="escape")
 		new_comment = {
 			"content" : content,
 			"time" : datetime.utcnow(),
