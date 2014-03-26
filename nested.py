@@ -171,9 +171,10 @@ class MainHandler(BaseHandler):
 	def recurseComment(self, comment, margin):
 		if comment == None:
 			return
-		self.write(margin + comment["content"])
+		self.write(margin + '<div class="comment">' + comment["content"] + '</div>')
+		self.write(self.render_string("post.html"))
 		#self.write("&nbsp;"*10 + str(comment.get("time",0)))
-		self.write("\n<br/>\n")
+		#self.write("\n<br/>\n")
 		for c in comment.get("children", []):
 			self.recurseComment(c, margin + "___")
 
@@ -209,7 +210,7 @@ class MainHandler(BaseHandler):
 		for v in a:
 			if not v.has_key("parent"):
 				self.recurseComment(v, "")
-		self.write("<hr>")
+		self.write("<hr>Commenter")
 		self.render("post.html")
 
  
