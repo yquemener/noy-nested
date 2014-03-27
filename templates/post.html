@@ -1,0 +1,7 @@
+<div class="answer" style="display:block">
+	<form action="/post" method=post>
+		<textarea rows="5" cols="75" name="content"></textarea><br/>
+		<input type="submit" value="Envoyer"/>
+		{% raw xsrf_form_html() %}
+	</form>
+</div>
