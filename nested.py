@@ -139,9 +139,9 @@ class FacebookAuthHandler(tornado.web.RequestHandler, tornado.auth.FacebookGraph
 		
 		
 class AuthLogoutHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.clear_cookie("noy_user")
-        self.redirect("/")
+	def get(self):
+		self.clear_cookie("noy_user")
+		self.redirect("/")
 
 class PostHandler(BaseHandler):
 	@tornado.web.authenticated
@@ -152,7 +152,12 @@ class PostHandler(BaseHandler):
 		superparent = self.request.arguments.get("superparent", [None])[0]
 
 		# TODO: add some bleach
-		content = markdown(content.decode("utf-8"), safe_mode="escape").rstrip("</p>").lstrip("<p>")
+		content = markdown(content.decode("utf-8"), safe_mode="escape")
+		if content.startswith("<p>"):
+			content = content[3:]
+		if content.endswith("</p>"):
+			content=content[:-4]
+		
 		new_comment = {
 			"content" : content,
 			"time" : datetime.utcnow(),
@@ -168,15 +173,18 @@ class PostHandler(BaseHandler):
 
         
 class MainHandler(BaseHandler):
-	def recurseComment(self, comment, margin):
+	def recurseComment(self, comment, margin, blockid):
 		if comment == None:
 			return
-		self.write(margin + '<div class="comment">' + comment["content"] + '</div>')
-		self.write(self.render_string("post.html"))
+		self.write('<div style="margin-left:'+str(margin*20)+'px"><span class="comment">' + comment["content"] + '</span>')
+		self.write(self.render_string("post.html", blockid=blockid, default_display="none", parent_id=comment["_id"]))
+		self.write('</div>')
 		#self.write("&nbsp;"*10 + str(comment.get("time",0)))
 		#self.write("\n<br/>\n")
+		i=0
 		for c in comment.get("children", []):
-			self.recurseComment(c, margin + "___")
+			i+=1
+			self.recurseComment(c, margin + 1, blockid+"."+str(i))
 
 	@tornado.web.asynchronous
 	def get(self):
@@ -207,11 +215,13 @@ class MainHandler(BaseHandler):
 				v["children"].sort(cmp=lambda x,y:cmp(str(x.get("time",0)), str(y.get("time",0))))
 		a=d.values()
 		a.sort(cmp=lambda x,y:cmp(str(x.get("time",0)), str(y.get("time",0))))
+		i=0
 		for v in a:
 			if not v.has_key("parent"):
-				self.recurseComment(v, "")
+				i+=1
+				self.recurseComment(v, 0, str(i))
 		self.write("<hr>Commenter")
-		self.render("post.html")
+		self.render("post.html", blockid="0", default_display="block", parent_id="")
 
  
 def main():
