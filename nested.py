@@ -176,29 +176,31 @@ class MainHandler(BaseHandler):
 	def recurseComment(self, comment, margin, blockid):
 		if comment == None:
 			return
-		self.write('<div style="margin-left:'+str(margin*20)+'px"><span class="comment">' + comment["content"] + '</span>')
+		#self.write('<div class="comment" style="margin-left:'+str(margin*20)+'px;margin-bottom:10px"><span class="comment">' + comment["content"] + '</span>')
+		self.write('<div class="comment">')
+		self.write('<div class="comment_head"><span class="comment_author">' + str(comment['author']))
+		self.write('</span> - <span class="comment_date">' + str(comment['time']).split(".")[0] + '</span></div>')
+		self.write('<span class="comment_body">' + comment["content"] + '</span>')
 		self.write(self.render_string("post.html", blockid=blockid, default_display="none", parent_id=comment["_id"]))
-		self.write('</div>')
-		#self.write("&nbsp;"*10 + str(comment.get("time",0)))
-		#self.write("\n<br/>\n")
 		i=0
 		for c in comment.get("children", []):
 			i+=1
 			self.recurseComment(c, margin + 1, blockid+"."+str(i))
+		self.write('</div>')
 
 	@tornado.web.asynchronous
 	def get(self):
 		self.write(self.render_string("header.html"))
 		db=self.application.database
 		comments = db["comments"].find()
+		self.write("<div class='header'>\n")
 		if self.get_current_user() == None:
 			self.write("Not Logged in.<br/>\n")
 			self.write("<a href='/signup'>Sign up</a> &nbsp; <a href='/login'>Log in</a> ")
 		else:
-			self.write("Logged in as "+str(self.get_current_user())+"<br/>\n")
-			self.write("<a href='/logout'>Log out</a>")
-		self.write("<hr>" + str(self.settings) + "<hr>")
-		self.write(str(self.get_secure_cookie("noy_auth_facebook"))+"<hr>")
+			self.write("<span>Logged in as "+str(self.get_current_user())+"</span> - \n")
+			self.write("<span><a href='/logout'>Log out</a></span>")
+		self.write("</div><hr/>\n")
 		d = dict()
 		for c in comments:
 			d[str(c["_id"])] = c

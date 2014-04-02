@@ -1,1 +1,45 @@
-.comment { color:purple }
+.comment { 
+    margin-bottom:3px;
+    margin-left:2px;
+    padding:2px;
+    border:solid 1px blue;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.comment_body {
+	font-style: normal;
+	font-weight: normal;
+	font-family: arial,sans-serif;
+	font-size: small;
+}
+
+.comment_head { 
+	font-size:x-small;
+}
+
+.comment_author { 
+	font-size:x-small;
+	font-weight: bold;
+	color:purple 
+}
+
+.comment_footer {
+	font-size:x-small;
+	color:gray;
+	font-weight: normal;
+    margin-bottom:3px;
+}
+
+.header {
+	font-style: normal;
+	font-weight: normal;
+	font-family: arial,sans-serif;
+	font-size: small;
+}
+
+body {
+    background-color:rgb(235,235,255);
+	font-family: arial,sans-serif;
+}
+
