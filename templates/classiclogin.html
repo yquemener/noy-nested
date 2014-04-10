@@ -5,22 +5,10 @@
     <title>Sign up</title>
   </head>
   <body>
-    <div id="body">
-      <form action="/signup/facebook" method=get>
-				<div>Choisissez un nom d'utilisateur</div>
-				<br/>
-				<input name="username" type="text"/><br/>
-				<input type="submit" value="Sign up using Facebook"/>
-				{% raw xsrf_form_html() %}
-      </form>
-      <hr/>
-      <form action="/signup/classic" method=post>
-
-				<div>Choisissez un nom d'utilisateur</div>
-				<br/>
+			<form action="/login/classic" method=post>
 				Nom <input name="username" type="text"/><br/>
 				Mot de passe <input name="password" type="text"/><br/>
-				<input type="submit" value="Envoyer"/>
+				<input type="submit" value="Log"/>
 				{% raw xsrf_form_html() %}
 	</form>
     </div>
