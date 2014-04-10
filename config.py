@@ -10,3 +10,6 @@ define("facebook_secret", help="your Facebook application secret",
 define("home_url", help="The URL the website will be at", 
                    default="http://localhost:8888")  
  
+define("cookie_secret", help="Some entropy for the cookie_secret", 
+                   default="Hé, tu sais quoi? je afdsqrwvais me le générer àl an,tn i pour l'entropie156851huguyfcvbnnjqdjsknbhgyuhjb")
+ 
