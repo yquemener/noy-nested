@@ -1,6 +1,9 @@
 *.py[cod]
 *~
 
+# Do not track changes to the config
+config.py
+
 # C extensions
 *.so
 
