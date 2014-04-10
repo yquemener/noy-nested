@@ -17,16 +17,8 @@ import tornado.web
 from 	markdown import markdown
  
 from tornado.options import define, options
- 
-define("port", default=8888, type=int)
-define("facebook_api_key", help="your Facebook application API key",
-                           default="1408863776041585")
 
-define("facebook_secret", help="your Facebook application secret",
-                          default="056d1d09366b04aaf82d307124dc852f")
-
-define("home_url", help="The URL the website will be at", 
-                   default="http://localhost:8888")  
+import config 
  
 class Application(tornado.web.Application):
     def __init__(self):
@@ -45,8 +37,10 @@ class Application(tornado.web.Application):
         handlers = [
             (r"/", MainHandler),
             (r"/signup/facebook", FacebookSignUpHandler),
+            (r"/signup/classic", ClassicSignUpHandler),
             (r"/login", AuthHandler),
             (r"/login/facebook", FacebookAuthHandler),
+            (r"/login/classic", ClassicAuthHandler),
             (r"/logout", AuthLogoutHandler),
             (r"/signup", SignupHandler),
             (r"/post", PostHandler),
@@ -67,6 +61,23 @@ class BaseHandler(tornado.web.RequestHandler):
 class SignupHandler(BaseHandler):
     def get(self):
         self.render("signup.html")
+
+class ClassicSignUpHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
+	@tornado.web.asynchronous
+	def get(self):
+		requested_username = self.get_argument("username", default=None, strip=False)
+		requested_password= self.get_argument("password", default=None, strip=False)
+		
+		db=self.application.database
+		userobj = db.users.find_one({"name": requested_username })
+
+		if(userobj!=None):
+			self.write("A user with this name already exists.")
+			self.finish()
+			return
+		db.users.insert({'name': requested_username, 'password': user['password']})
+
+		self.redirect("/login/classic")
 
 class FacebookSignUpHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 	@tornado.web.asynchronous
@@ -111,6 +122,32 @@ class AuthHandler(tornado.web.RequestHandler):
     def get(self):
         self.redirect("/login/facebook")
 
+class ClassicAuthHandler(tornado.web.RequestHandler, tornado.auth.FacebookGraphMixin):
+	@tornado.web.asynchronous
+	"""TODO def get(self):
+		my_url = self.settings["home_url"]+"/login/facebook"
+		if self.get_argument("code", False):
+			self.get_authenticated_user(
+							redirect_uri=my_url,
+							client_id=self.settings["facebook_api_key"],
+							client_secret=self.settings["facebook_secret"],
+							code=self.get_argument("code"),
+							callback=self._on_auth)
+			return
+		self.authorize_redirect(redirect_uri=my_url,
+														client_id=self.settings["facebook_api_key"],
+														extra_params={"scope": "read_stream"})
+		
+	def _on_auth(self, user):
+		if not user:
+			raise tornado.web.HTTPError(500, "Facebook auth failed")
+		db=self.application.database
+		userobj = db.users.find_one({"facebook_id": user["id"] })
+		if userobj==None:
+			raise tornado.web.HTTPError(500, "Unknown user. Please sign up.")
+		self.set_secure_cookie("noy_user", tornado.escape.json_encode(userobj["name"]))
+		self.redirect("/")"""
+		
 class FacebookAuthHandler(tornado.web.RequestHandler, tornado.auth.FacebookGraphMixin):
 	@tornado.web.asynchronous
 	def get(self):
