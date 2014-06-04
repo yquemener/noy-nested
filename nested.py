@@ -28,7 +28,8 @@ from handlers.FacebookAuthHandler import FacebookAuthHandler
 from handlers.AuthLogoutHandler import AuthLogoutHandler
 from handlers.SignupHandler import SignupHandler
 from handlers.PostCommentHandler import PostCommentHandler
-from handlers.PostDocumentHandler import PostDocumentHandler
+from handlers.PostHandler import PostHandler
+from handlers.PostDiscussionHandler import PostDiscussionHandler
 
 
 class Application(tornado.web.Application):
@@ -53,21 +54,15 @@ class Application(tornado.web.Application):
             (r"/login/classic", ClassicAuthHandler),
             (r"/logout", AuthLogoutHandler),
             (r"/signup", SignupHandler),
-            (r"/post_comment", PostCommentHandler),
-            (r"/post_document", PostDocumentHandler),
+            (r"/post/comment", PostCommentHandler),
+            (r"/post", PostHandler),
+            (r"/post/discussion", PostDiscussionHandler),
         ]
  
         tornado.web.Application.__init__(self, handlers, **settings)
  
         self.con = Connection('localhost', 27017)
         self.database = self.con["nested"]
- 
-        
-
-   
-
-
-		
  
 def main():
     tornado.options.parse_command_line()

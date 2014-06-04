@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="proposals.css">
+  <script>
+      function toggleVisible(elem)
+      {
+          e=document.getElementById(elem);
+
+          if((e.style.display=="none")||(e.style.display==""))
+          {
+              e.style.display="block";
+          }
+          else
+          {
+              e.style.display="none";
+          }
+      }
+
+      function hideAll()
+      {
+          document.getElementById("form1").style.display = "none";
+          document.getElementById("form2").style.display = "none";
+          document.getElementById("form3").style.display = "none";
+          document.getElementById("form4").style.display = "none";
+          document.getElementById("form5").style.display = "none";
+      }
+  </script>
+</head>
+<body onload="hideAll()">
+	<div class="spending">
+		<div class="title" onClick="toggleVisible('form1')">[Dépense]</div>
+		<div class="subtext" onClick="toggleVisible('form1')">Proposer une dépense</div>
+        <div id="form1">
+            <form action="/post/spending" method=post>
+            		<textarea rows="5" cols="75" name="content"></textarea><br/>
+                Montant: <input type="text" name="amount"><br/>
+                Responsable: <input type="text" name="leader"><br/>
+                <input type="submit">
+                {% raw xsrf_form_html() %}
+            </form>
+        </div>
+	</div>
+	<div class="election">
+		<div class="title" onClick="toggleVisible('form2')">[Election]</div>
+		<div class="subtext" onClick="toggleVisible('form2')">Proposer un changement de bureau</div>
+        <div id="form2">
+            <form action="/post/election" method=post>
+                Remplacer <input type="text" name="togo"> par <input type="text" name="toenter"><br/>
+                Justification: <textarea rows="5" cols="75" name="content"></textarea><br/>
+                <input type="submit">
+                {% raw xsrf_form_html() %}
+            </form>
+        </div>
+	</div>
+	<div class="status">
+		<div class="title" onClick="toggleVisible('form3')">[Statuts]</div>
+		<div class="subtext" onClick="toggleVisible('form3')">Proposer un changement dans les statuts</div>
+        <div id="form3">
+            <form action="/post/status" method=post>
+            		<textarea rows="5" cols="75" name="content"></textarea><br/>
+                <input type="submit">
+                {% raw xsrf_form_html() %}
+            </form>
+        </div>
+	</div>
+	<div class="vote">
+		<div class="title" onClick="toggleVisible('form4')">[Vote]</div>
+		<div class="subtext" onClick="toggleVisible('form4')">Proposer un vote qui ne rentre pas dans les autres catégories</div>
+        <div id="form4">
+            <form action="/post/vote" method=post>
+            		<textarea rows="5" cols="75" name="content"></textarea><br/>
+                <input type="submit">
+                {% raw xsrf_form_html() %}
+            </form>
+        </div>
+	</div>
+	<div class="discussion">
+		<div class="title" onClick="toggleVisible('form5')">[Discussion]</div>
+		<div class="subtext" onClick="toggleVisible('form5')">Lancer un sujet sans appeler à un vote</div>
+        <div id="form5">
+            <form action="/post/discussion"  method=post>
+            		<textarea rows="5" cols="75" name="content"></textarea><br/>
+                <input type="submit">
+                {% raw xsrf_form_html() %}
+            </form>
+        </div>
+	</div>
+</body>
+</html>
