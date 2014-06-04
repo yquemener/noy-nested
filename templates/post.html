@@ -1,7 +1,7 @@
 <div class="comment_footer" Onclick='toggleVisible("reply_{{ blockid }}");return false;'>Répondre</div>
 
 <div class="comment_body" style="display:{{ default_display }}" id="reply_{{ blockid }}">
-	<form action="/post" method=post>
+	<form action="/post_comment" method=post>
 		<textarea rows="5" cols="75" name="content"></textarea><br/>
 		<input type="hidden" name="parent" value="{{ parent_id }}"/>
 		<input type="submit" value="Envoyer"/>
