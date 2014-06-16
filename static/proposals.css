@@ -38,6 +38,14 @@
 	font-size: small;
 }
 
+div.title {
+	font-size: normal;  
+}
+
+div.subtext {
+	font-size: x-small;  
+}
+
 body {
     background-color:rgb(235,235,255);
 	font-family: arial,sans-serif;

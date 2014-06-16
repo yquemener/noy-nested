@@ -37,7 +37,7 @@ class MainHandler(BaseHandler):
 	def get(self):
 		self.write(self.render_string("header.html"))
 		db=self.application.database
-		comments = db["comments"].find()
+		documents = db["documents"].find()
 		self.write("<div class='header'>\n")
 		if self.get_current_user() == None:
 			self.write("Not Logged in.<br/>\n")
@@ -47,26 +47,9 @@ class MainHandler(BaseHandler):
 			self.write("<span><a href='/logout'>Log out</a></span>")
 		self.write("</div><hr/>\n")
 		d = dict()
-		for c in comments:
-			d[str(c["_id"])] = c
-		# TODO: check if some smartass makes a cyclic reference
-		for (k,v) in d.items():
-			par = v.get("parent",None)
-			if par!=None:
-				if d[par].has_key("children"):
-					d[par]["children"].append(v)
-				else:
-					d[par]["children"] = [v]
-		for (k,v) in d.items():
-			if v.has_key("children"):
-				v["children"].sort(cmp=lambda x,y:cmp(str(x.get("time",0)), str(y.get("time",0))))
-		a=d.values()
-		a.sort(cmp=lambda x,y:cmp(str(x.get("time",0)), str(y.get("time",0))))
-		i=0
-		for v in a:
-			if not v.has_key("parent"):
-				i+=1
-				self.recurseComment(v, 0, str(i))
+		for d in documents:
+			for (k,v) in d.items():
+				self.write(str(k)+" = "+str(v)+" <br>")
 		self.write("<hr>Commenter")
 		self.render("post.html", blockid="0", default_display="block", parent_id="")
 
