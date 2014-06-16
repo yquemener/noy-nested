@@ -48,8 +48,11 @@ class MainHandler(BaseHandler):
 		self.write("</div><hr/>\n")
 		d = dict()
 		for d in documents:
-			for (k,v) in d.items():
-				self.write(str(k)+" = "+str(v)+" <br>")
+			self.write("<div class='documentsummary'>")
+			self.write("  <span class='documentsummarytitle'>"+d['title']+"</span>\n")
+			self.write("  <span class='documentsummaryauthor'>"+d['author']+"</span>\n")
+			self.write("  <span class='documentsummarydate'>"+str(datetime(*d['time'][:7]))+"</span>\n")
+			self.write("</div>\n")
 		self.write("<hr>Commenter")
 		self.render("post.html", blockid="0", default_display="block", parent_id="")
 

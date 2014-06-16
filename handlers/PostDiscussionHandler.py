@@ -26,6 +26,7 @@ class PostDiscussionHandler(BaseHandler):
 	def post(self):
 		db=self.application.database
 		content = self.request.arguments.get("content", [""])[0]
+		title = self.request.arguments.get("title", [""])[0]
 
 		# TODO: add some bleach
 		content = markdown(content.decode("utf-8"), safe_mode="escape")
@@ -37,7 +38,9 @@ class PostDiscussionHandler(BaseHandler):
 		new_document = {
 			"content" : content,
 			"type" : "discussion",
-			"author" : self.get_current_user()
+			"author" : self.get_current_user(),
+			"title" : title,
+			"time": tuple(datetime.now().utctimetuple())
 		}
 
 		db.documents.insert(new_document)

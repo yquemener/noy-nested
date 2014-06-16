@@ -34,6 +34,7 @@
 		<div class="subtext" onClick="toggleVisible('form1')">Proposer une dépense</div>
         <div id="form1">
             <form action="/post/spending" method=post>
+								Titre: <input type="text" name="title"><br/>
             		<textarea rows="5" cols="75" name="content"></textarea><br/>
                 Montant: <input type="text" name="amount"><br/>
                 Responsable: <input type="text" name="leader"><br/>
@@ -59,6 +60,7 @@
 		<div class="subtext" onClick="toggleVisible('form3')">Proposer un changement dans les statuts</div>
         <div id="form3">
             <form action="/post/status" method=post>
+								Titre: <input type="text" name="title"><br/>
             		<textarea rows="5" cols="75" name="content"></textarea><br/>
                 <input type="submit">
                 {% raw xsrf_form_html() %}
@@ -70,6 +72,7 @@
 		<div class="subtext" onClick="toggleVisible('form4')">Proposer un vote qui ne rentre pas dans les autres catégories</div>
         <div id="form4">
             <form action="/post/vote" method=post>
+								Titre: <input type="text" name="title"><br/>
             		<textarea rows="5" cols="75" name="content"></textarea><br/>
                 <input type="submit">
                 {% raw xsrf_form_html() %}
@@ -81,6 +84,7 @@
 		<div class="subtext" onClick="toggleVisible('form5')">Lancer un sujet sans appeler à un vote</div>
         <div id="form5">
             <form action="/post/discussion"  method=post>
+								Titre: <input type="text" name="title"><br/>
             		<textarea rows="5" cols="75" name="content"></textarea><br/>
                 <input type="submit">
                 {% raw xsrf_form_html() %}
