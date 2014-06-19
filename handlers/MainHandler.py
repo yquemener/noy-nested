@@ -57,4 +57,5 @@ class MainHandler(BaseHandler):
 			self.write("   en date du \n")
 			self.write("  <span class='documentsummarydate'>"+str(datetime(*d['time'][:7]))+"</span>\n")
 			self.write("</div>\n")
+		self.write("<br><br><div><a href='/post'>Poster un nouveau document</a></div>")
 
