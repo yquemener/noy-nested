@@ -1,3 +1,5 @@
+# -*- coding: utf-8
+
 from datetime import datetime
 from pymongo.connection import Connection
 from bson.objectid import ObjectId
@@ -26,7 +28,7 @@ class MainHandler(BaseHandler):
 		self.write('<div class="comment_head"><span class="comment_author">' + str(comment['author']))
 		self.write('</span> - <span class="comment_date">' + str(comment['time']).split(".")[0] + '</span></div>')
 		self.write('<span class="comment_body">' + comment["content"] + '</span>')
-		self.write(self.render_string("post.html", blockid=blockid, default_display="none", parent_id=comment["_id"]))
+		self.write(self.render_string("post.html", blockid=blockid, default_display="none", parent_id=comment["_id"], super_parent_id=""))
 		i=0
 		for c in comment.get("children", []):
 			i+=1
@@ -50,9 +52,11 @@ class MainHandler(BaseHandler):
 		for d in documents:
 			self.write("<div class='documentsummary'>")
 			self.write("  <span class='documentsummarytitle'>"+d['title']+"</span>\n")
+			self.write("   par \n")
 			self.write("  <span class='documentsummaryauthor'>"+d['author']+"</span>\n")
+			self.write("   en date du \n")
 			self.write("  <span class='documentsummarydate'>"+str(datetime(*d['time'][:7]))+"</span>\n")
 			self.write("</div>\n")
 		self.write("<hr>Commenter")
-		self.render("post.html", blockid="0", default_display="block", parent_id="")
+		self.render("post.html", blockid="0", default_display="block", parent_id="", super_parent_id="")
 

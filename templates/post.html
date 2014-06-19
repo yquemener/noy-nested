@@ -4,6 +4,7 @@
 	<form action="/post/comment" method=post>
 		<textarea rows="5" cols="75" name="content"></textarea><br/>
 		<input type="hidden" name="parent" value="{{ parent_id }}"/>
+		<input type="hidden" name="super_parent" value="{{ super_parent_id }}"/>
 		<input type="submit" value="Envoyer"/>
 		{% raw xsrf_form_html() %}
 	</form>

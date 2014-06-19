@@ -30,6 +30,8 @@ from handlers.SignupHandler import SignupHandler
 from handlers.PostCommentHandler import PostCommentHandler
 from handlers.PostHandler import PostHandler
 from handlers.PostDiscussionHandler import PostDiscussionHandler
+from handlers.ShowDiscussHandler import ShowDiscussHandler
+
 
 
 class Application(tornado.web.Application):
@@ -48,6 +50,7 @@ class Application(tornado.web.Application):
 
         handlers = [
             (r"/", MainHandler),
+            (r"/document/(.*)", ShowDiscussHandler),
             (r"/signup/facebook", FacebookSignUpHandler),
             (r"/signup/classic", ClassicSignUpHandler),
             (r"/login/facebook", FacebookAuthHandler),

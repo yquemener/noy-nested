@@ -27,7 +27,7 @@ class PostCommentHandler(BaseHandler):
 		db=self.application.database
 		content = self.request.arguments.get("content", [""])[0]
 		parent = self.request.arguments.get("parent", [None])[0]
-		superparent = self.request.arguments.get("superparent", [None])[0]
+		super_parent = self.request.arguments.get("super_parent", [None])[0]
 
 		# TODO: add some bleach
 		content = markdown(content.decode("utf-8"), safe_mode="escape")
@@ -44,8 +44,8 @@ class PostCommentHandler(BaseHandler):
 
 		if parent != None:
 			new_comment["parent"] = parent
-		if superparent != None:
-			new_comment["superparent"] = superparent
+		if super_parent != None:
+			new_comment["super_parent"] = super_parent
 		db.comments.insert(new_comment)
 		self.redirect("/")
 

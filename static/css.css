@@ -43,3 +43,61 @@ body {
 	font-family: arial,sans-serif;
 }
 
+div.title {
+	font-size: normal;  
+}
+
+div.subtext {
+	font-size: x-small;  
+}
+
+div.documentsummary{
+	font-size: x-small;
+	font-weight: normal;
+}
+
+span.documentsummarytitle {
+	font-size: large;
+	}
+
+span.documentsummaryauthor {
+	font-size: x-small;
+	font-weight: bold;
+}
+
+span.documentsummarydate {
+	font-size: x-small;
+	font-weight: bold;
+}
+
+div.documentheader {
+	font-size: x-small;
+	font-weight: normal;
+	}
+
+div.documenttitle {
+	font-size: x-large;
+	}
+
+span.documentauthor {
+	font-size: x-small;
+	font-weight: bold;
+}
+
+span.documentdate {
+	font-size: x-small;
+	font-weight: bold;
+}
+
+div.documentcontent {
+	font-size: small;
+	font-weight: normal;
+  margin-bottom:3px;
+  margin-left:2px;
+  padding:2px;
+  border:solid 1px blue;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+
