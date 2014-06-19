@@ -60,6 +60,10 @@ span.documentsummarytitle {
 	font-size: large;
 	}
 
+span.documentsummarytitle a {
+	text-decoration: none;
+	}
+
 span.documentsummaryauthor {
 	font-size: x-small;
 	font-weight: bold;

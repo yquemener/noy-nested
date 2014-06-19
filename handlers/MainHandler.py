@@ -35,7 +35,6 @@ class MainHandler(BaseHandler):
 			self.recurseComment(c, margin + 1, blockid+"."+str(i))
 		self.write('</div>')
 
-	@tornado.web.asynchronous
 	def get(self):
 		self.write(self.render_string("header.html"))
 		db=self.application.database
@@ -51,12 +50,11 @@ class MainHandler(BaseHandler):
 		d = dict()
 		for d in documents:
 			self.write("<div class='documentsummary'>")
-			self.write("  <span class='documentsummarytitle'>"+d['title']+"</span>\n")
+			self.write("  <span class='documentsummarytitle'>["+str(d['type'])+"]</span>\n")
+			self.write("  <span class='documentsummarytitle'><a href='/document/"+str(d['_id'])+"'>" +d['title']+"</a></span>\n")
 			self.write("   par \n")
 			self.write("  <span class='documentsummaryauthor'>"+d['author']+"</span>\n")
 			self.write("   en date du \n")
 			self.write("  <span class='documentsummarydate'>"+str(datetime(*d['time'][:7]))+"</span>\n")
 			self.write("</div>\n")
-		self.write("<hr>Commenter")
-		self.render("post.html", blockid="0", default_display="block", parent_id="", super_parent_id="")
 
