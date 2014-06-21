@@ -30,6 +30,7 @@ from handlers.SignupHandler import SignupHandler
 from handlers.PostCommentHandler import PostCommentHandler
 from handlers.PostHandler import PostHandler
 from handlers.PostDiscussionHandler import PostDiscussionHandler
+from handlers.PostSpendingHandler import PostSpendingHandler
 from handlers.ShowDiscussHandler import ShowDiscussHandler
 
 
@@ -60,6 +61,7 @@ class Application(tornado.web.Application):
             (r"/post/comment", PostCommentHandler),
             (r"/post", PostHandler),
             (r"/post/discussion", PostDiscussionHandler),
+            (r"/post/spending", PostSpendingHandler),
         ]
  
         tornado.web.Application.__init__(self, handlers, **settings)
