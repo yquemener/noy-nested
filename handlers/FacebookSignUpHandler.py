@@ -11,6 +11,7 @@ import tornado.web
 from tornado.options import define, options
 
 from handlers.BaseHandler import BaseHandler
+from utils import checkClean
 
 class FacebookSignUpHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 	@tornado.web.asynchronous
@@ -35,6 +36,12 @@ class FacebookSignUpHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 			raise tornado.web.HTTPError(500, "Facebook auth failed")
 		
 		requested_username = self.get_argument("username", default=None, strip=False)
+
+		if(not checkClean(requested_username)):
+			self.write("Merci de ne pas utiliser de HTML ni de markdown dans votre login")
+			self.finish()
+			return
+
 		db=self.application.database
 		userobj = db.users.find_one({"facebook_id": user["id"] })
 		userobj2 = db.users.find_one({"name": requested_username })
