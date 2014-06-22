@@ -20,6 +20,33 @@ from tornado.options import define, options
 from handlers.BaseHandler import BaseHandler
 
 class MainHandler(BaseHandler):
+    def createDocumentHeader(self, doc):
+        s = ""
+        if doc['type']=="discussion":
+			s+="  <span class='documentsummarytype'>[Discussion]</span>\n"
+			s+="  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>" +doc['title']+"</a></span>\n"
+			s+="   par \n"
+			s+="  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
+    		s+="   en date du \n"
+			s+="  <span class='documentsummarydate'>"+str(datetime(*doc['time'][:7]))+"</span>\n"
+        else if doc['type']=="spending":
+			s+="  <span class='documentsummarytype'>[Dépense]</span>\n"
+			s+="  <span class='documentsummaryamount'>["+doc['amount']+"&euro;]</span>\n"
+			s+="  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>" +doc['title']+"</a></span>\n"
+			s+="   par \n"
+			s+="  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
+    		s+="   en date du \n"
+			s+="  <span class='documentsummarydate'>"+str(datetime(*doc['time'][:7]))+"</span>\n"
+        else if doc['type']=="election":
+			s+="  <span class='documentsummarytype'>[Election]</span>\n"
+			s+="  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>Remplacer " +doc['togo']+" par "+doc['toenter']+"</a></span>\n"
+			s+="   proposé par \n"
+			s+="  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
+    		s+="   en date du \n"
+			s+="  <span class='documentsummarydate'>"+str(datetime(*doc['time'][:7]))+"</span>\n"
+        return s
+
+
 	def recurseComment(self, comment, margin, blockid):
 		if comment == None:
 			return
