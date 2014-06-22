@@ -31,6 +31,9 @@ from handlers.PostCommentHandler import PostCommentHandler
 from handlers.PostHandler import PostHandler
 from handlers.PostDiscussionHandler import PostDiscussionHandler
 from handlers.PostSpendingHandler import PostSpendingHandler
+from handlers.PostElectionHandler import PostElectionHandler
+from handlers.PostVoteHandler import PostVoteHandler
+from handlers.PostStatusHandler import PostStatusHandler
 from handlers.ShowDiscussHandler import ShowDiscussHandler
 
 
@@ -62,6 +65,9 @@ class Application(tornado.web.Application):
             (r"/post", PostHandler),
             (r"/post/discussion", PostDiscussionHandler),
             (r"/post/spending", PostSpendingHandler),
+            (r"/post/vote", PostVoteHandler),
+            (r"/post/election", PostElectionHandler),
+            (r"/post/status", PostStatusHandler),
         ]
  
         tornado.web.Application.__init__(self, handlers, **settings)

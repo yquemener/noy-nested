@@ -20,47 +20,49 @@ from tornado.options import define, options
 from handlers.BaseHandler import BaseHandler
 
 class MainHandler(BaseHandler):
-    def createDocumentHeader(self, doc):
-        s = ""
-        if doc['type']=="discussion":
+	def createDocumentHeader(self, doc):
+		# TODO: make a clean unicde/str conversion
+		s = ""
+		if doc['type']=="discussion":
 			s+="  <span class='documentsummarytype'>[Discussion]</span>\n"
 			s+="  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>" +doc['title']+"</a></span>\n"
 			s+="   par \n"
 			s+="  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
-    		s+="   en date du \n"
+	 		s+="   en date du \n"
 			s+="  <span class='documentsummarydate'>"+str(datetime(*doc['time'][:7]))+"</span>\n"
-        else if doc['type']=="spending":
-			s+="  <span class='documentsummarytype'>[D�pense]</span>\n"
-			s+="  <span class='documentsummaryamount'>["+doc['amount']+"&euro;]</span>\n"
-			s+="  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>" +doc['title']+"</a></span>\n"
+		elif doc['type']=="spending":
+			s+="  <span class='documentsummarytype'>[Dépense]</span>\n"
+			s+="  <span class='documentsummaryamount'>["+str(doc['amount'])+"&euro;]</span>\n"
+			s+="  <span class='documentsummarytitle'><a href='/document/"
+			s+=str(doc['_id'])+"'>" +str(doc['title'])+"</a></span>\n"
 			s+="   par \n"
-			s+="  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
-    		s+="   en date du \n"
+			s+="  <span class='documentsummaryauthor'>"+str(doc['author'])+"</span>\n"
+	 		s+="   en date du \n"
 			s+="  <span class='documentsummarydate'>"+str(datetime(*doc['time'][:7]))+"</span>\n"
-        else if doc['type']=="election":
+		elif doc['type']=="election":
 			s+="  <span class='documentsummarytype'>[Election]</span>\n"
-			s+="  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>Remplacer " +doc['togo']+" par "+doc['toenter']+"</a></span>\n"
-			s+="   propos� par \n"
+			s+=u"  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])
+			s+="'>Remplacer " +str(doc['togo'])+" par "+unicode(doc['toenter'])+"</a></span>\n"
+			s+=u"   proposé par \n"
 			s+="  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
-    		s+="   en date du \n"
+	 		s+="   en date du \n"
 			s+="  <span class='documentsummarydate'>"+str(datetime(*doc['time'][:7]))+"</span>\n"
-        return s
+		elif doc['type']=="status":
+			s+="  <span class='documentsummarytype'>[Statuts]</span>\n"
+			s+="  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>"+doc['title']+"</a></span>\n"
+			s+=u"   proposé par \n"
+			s+="  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
+	 		s+="   en date du \n"
+			s+="  <span class='documentsummarydate'>"+str(datetime(*doc['time'][:7]))+"</span>\n"
+		elif doc['type']=="vote":
+			s+="  <span class='documentsummarytype'>[Vote]</span>\n"
+			s+="  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>"+doc['title']+"</a></span>\n"
+			s+=u"   proposé par \n"
+			s+="  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
+	 		s+="   en date du \n"
+			s+="  <span class='documentsummarydate'>"+str(datetime(*doc['time'][:7]))+"</span>\n"
+		return s
 
-
-	def recurseComment(self, comment, margin, blockid):
-		if comment == None:
-			return
-		#self.write('<div class="comment" style="margin-left:'+str(margin*20)+'px;margin-bottom:10px"><span class="comment">' + comment["content"] + '</span>')
-		self.write('<div class="comment">')
-		self.write('<div class="comment_head"><span class="comment_author">' + str(comment['author']))
-		self.write('</span> - <span class="comment_date">' + str(comment['time']).split(".")[0] + '</span></div>')
-		self.write('<span class="comment_body">' + comment["content"] + '</span>')
-		self.write(self.render_string("post.html", blockid=blockid, default_display="none", parent_id=comment["_id"], super_parent_id=""))
-		i=0
-		for c in comment.get("children", []):
-			i+=1
-			self.recurseComment(c, margin + 1, blockid+"."+str(i))
-		self.write('</div>')
 
 	def get(self):
 		self.write(self.render_string("header.html"))
@@ -77,12 +79,7 @@ class MainHandler(BaseHandler):
 		d = dict()
 		for d in documents:
 			self.write("<div class='documentsummary'>")
-			self.write("  <span class='documentsummarytitle'>["+str(d['type'])+"]</span>\n")
-			self.write("  <span class='documentsummarytitle'><a href='/document/"+str(d['_id'])+"'>" +d['title']+"</a></span>\n")
-			self.write("   par \n")
-			self.write("  <span class='documentsummaryauthor'>"+d['author']+"</span>\n")
-			self.write("   en date du \n")
-			self.write("  <span class='documentsummarydate'>"+str(datetime(*d['time'][:7]))+"</span>\n")
+			self.write(self.createDocumentHeader(d))
 			self.write("</div>\n")
 		self.write("<br><br><div><a href='/post'>Poster un nouveau document</a></div>")
 
