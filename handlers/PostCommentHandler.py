@@ -20,6 +20,7 @@ from tornado.options import define, options
 import config 
 
 from handlers.BaseHandler import BaseHandler
+from utils import clean
 
 class PostCommentHandler(BaseHandler):
 	@tornado.web.authenticated
@@ -29,12 +30,7 @@ class PostCommentHandler(BaseHandler):
 		parent = self.request.arguments.get("parent", [None])[0]
 		super_parent = self.request.arguments.get("super_parent", [None])[0]
 
-		# TODO: add some bleach
-		content = markdown(content.decode("utf-8"), safe_mode="escape")
-		if content.startswith("<p>"):
-			content = content[3:]
-		if content.endswith("</p>"):
-			content=content[:-4]
+		content = clean(content)
 		
 		new_comment = {
 			"content" : content,

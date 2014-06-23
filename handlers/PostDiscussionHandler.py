@@ -20,6 +20,7 @@ from tornado.options import define, options
 import config 
 
 from handlers.BaseHandler import BaseHandler
+from utils import clean
 
 class PostDiscussionHandler(BaseHandler):
 	@tornado.web.authenticated
@@ -28,13 +29,9 @@ class PostDiscussionHandler(BaseHandler):
 		content = self.request.arguments.get("content", [""])[0]
 		title = self.request.arguments.get("title", [""])[0]
 
-		# TODO: add some bleach
-		content = markdown(content.decode("utf-8"), safe_mode="escape")
-		if content.startswith("<p>"):
-			content = content[3:]
-		if content.endswith("</p>"):
-			content=content[:-4]
-		
+		title = clean(title)
+		content = clean(content)
+
 		new_document = {
 			"content" : content,
 			"type" : "discussion",

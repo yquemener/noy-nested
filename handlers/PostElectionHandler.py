@@ -20,6 +20,7 @@ from tornado.options import define, options
 import config 
 
 from handlers.BaseHandler import BaseHandler
+from utils import clean
 
 class PostElectionHandler(BaseHandler):
 	@tornado.web.authenticated
@@ -31,13 +32,9 @@ class PostElectionHandler(BaseHandler):
         # TODO check it is a real username
 		toenter = self.request.arguments.get("toenter", [""])[0]
 
-		# TODO: add some bleach
-		content = markdown(content.decode("utf-8"), safe_mode="escape")
-		if content.startswith("<p>"):
-			content = content[3:]
-		if content.endswith("</p>"):
-			content=content[:-4]
-		
+		content = clean(content)
+		togo = clean(togo)
+		toenter = clean(toenter)
 		new_document = {
 			"content" : content,
 			"type" : "election",

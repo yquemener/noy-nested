@@ -20,6 +20,7 @@ from tornado.options import define, options
 import config 
 
 from handlers.BaseHandler import BaseHandler
+from utils import clean
 
 class PostSpendingHandler(BaseHandler):
 	@tornado.web.authenticated
@@ -27,18 +28,13 @@ class PostSpendingHandler(BaseHandler):
 		db=self.application.database
 		content = self.request.arguments.get("content", [""])[0]
 		title = self.request.arguments.get("title", [""])[0]
-        # TODO check it is a valid number
-		amount = self.request.arguments.get("amount", [""])[0]
+		amount = int(self.request.arguments.get("amount", [""])[0])
         # TODO check it is a real username
 		leader = self.request.arguments.get("leader", [""])[0]
 
-		# TODO: add some bleach
-		content = markdown(content.decode("utf-8"), safe_mode="escape")
-		if content.startswith("<p>"):
-			content = content[3:]
-		if content.endswith("</p>"):
-			content=content[:-4]
-		
+		content = clean(content)
+		title = clean(title)
+		leader = clean(leader)
 		new_document = {
 			"content" : content,
 			"type" : "spending",
