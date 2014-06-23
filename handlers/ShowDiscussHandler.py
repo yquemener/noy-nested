@@ -38,7 +38,12 @@ class ShowDiscussHandler(BaseHandler):
 		db=self.application.database
 		doc = db["documents"].find({'_id':ObjectId(path)})
 		self.write("<div class='documentheader'>\n")
-		self.write("  <div class='documenttitle'>"+doc[0]['title']+"</div>\n")
+		if(doc[0]['type']!="election"):
+			self.write("  <div class='documenttitle'>"+doc[0]['title']+"</div>\n")
+		else:
+			self.write("  <div class='documenttitle'>")
+			self.write("Remplacer " +str(doc[0]['togo'])+" par "+unicode(doc[0]['toenter']))
+			self.write("</div>\n")
 		self.write("   par <span class='documentauthor'>"+doc[0]['author']+"</span>\n")
 		self.write("   en date du <span class='documentdate'>"+str(datetime(*doc[0]['time'][:7]))+"</span>\n")
 		self.write("</div>")
