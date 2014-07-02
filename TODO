@@ -1,6 +1,10 @@
-Fuse the two files together 
+VOTES
+- make votes a POST call rather than a GET
+- show already voted-on items
+- allow to remove a plus or minus vote
 
-Have users in mongoDB:
-    - a page to select one's username on signup
-    - an author field on messages
-    - a test to see if you are logged in as a signedup user
+USERS
+- make a user page with recent answers and posts on followed documents
+
+DOCUMENTS
+- enforce a time limit for proposals
