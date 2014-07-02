@@ -37,7 +37,9 @@ class PostStatusHandler(BaseHandler):
 			"type" : "status",
 			"title" : title,
 			"author" : self.get_current_user(),
-			"time": tuple(datetime.now().utctimetuple())
+			"time": tuple(datetime.now().utctimetuple()),
+			"plusvote": list(),
+			"minusvote": list()
 		}
 
 		db.documents.insert(new_document)

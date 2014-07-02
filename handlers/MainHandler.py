@@ -22,8 +22,12 @@ from handlers.BaseHandler import BaseHandler
 class MainHandler(BaseHandler):
 	def createDocumentHeader(self, doc):
 		# TODO: make a clean unicde/str conversion
+		score = len(doc['plusvote'])-len(doc['minusvote'])
 		s = ""
 		if doc['type']=="discussion":
+			s+="  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
+			s+="  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
+			s+="  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
 			s+="  <span class='documentsummarytype'>[Discussion]</span>\n"
 			s+="  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>" +doc['title']+"</a></span>\n"
 			s+="   par \n"
@@ -31,6 +35,9 @@ class MainHandler(BaseHandler):
 	 		s+="   en date du \n"
 			s+="  <span class='documentsummarydate'>"+str(datetime(*doc['time'][:7]))+"</span>\n"
 		elif doc['type']=="spending":
+			s+="  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
+			s+="  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
+			s+="  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
 			s+="  <span class='documentsummarytype'>[Dépense]</span>\n"
 			s+="  <span class='documentsummaryamount'>["+str(doc['amount'])+"&euro;]</span>\n"
 			s+="  <span class='documentsummarytitle'><a href='/document/"
@@ -40,6 +47,9 @@ class MainHandler(BaseHandler):
 	 		s+="   en date du \n"
 			s+="  <span class='documentsummarydate'>"+str(datetime(*doc['time'][:7]))+"</span>\n"
 		elif doc['type']=="election":
+			s+="  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
+			s+="  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
+			s+="  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
 			s+="  <span class='documentsummarytype'>[Election]</span>\n"
 			s+=u"  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])
 			s+="'>Remplacer " +str(doc['togo'])+" par "+unicode(doc['toenter'])+"</a></span>\n"
@@ -48,6 +58,9 @@ class MainHandler(BaseHandler):
 	 		s+="   en date du \n"
 			s+="  <span class='documentsummarydate'>"+str(datetime(*doc['time'][:7]))+"</span>\n"
 		elif doc['type']=="status":
+			s+="  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
+			s+="  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
+			s+="  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
 			s+="  <span class='documentsummarytype'>[Statuts]</span>\n"
 			s+="  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>"+doc['title']+"</a></span>\n"
 			s+=u"   proposé par \n"
@@ -55,6 +68,9 @@ class MainHandler(BaseHandler):
 	 		s+="   en date du \n"
 			s+="  <span class='documentsummarydate'>"+str(datetime(*doc['time'][:7]))+"</span>\n"
 		elif doc['type']=="vote":
+			s+="  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
+			s+="  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
+			s+="  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
 			s+="  <span class='documentsummarytype'>[Vote]</span>\n"
 			s+="  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>"+doc['title']+"</a></span>\n"
 			s+=u"   proposé par \n"

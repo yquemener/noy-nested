@@ -35,7 +35,9 @@ class PostCommentHandler(BaseHandler):
 		new_comment = {
 			"content" : content,
 			"time" : datetime.utcnow(),
-			"author" : self.get_current_user()
+			"author" : self.get_current_user(),
+			"plusvote": list(),
+			"minusvote": list()
 		}
 
 		if parent != None:

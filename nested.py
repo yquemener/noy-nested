@@ -35,6 +35,8 @@ from handlers.PostElectionHandler import PostElectionHandler
 from handlers.PostVoteHandler import PostVoteHandler
 from handlers.PostStatusHandler import PostStatusHandler
 from handlers.ShowDiscussHandler import ShowDiscussHandler
+from handlers.PlusVoteHandler import PlusVoteHandler
+from handlers.MinusVoteHandler import MinusVoteHandler
 
 
 
@@ -68,6 +70,8 @@ class Application(tornado.web.Application):
             (r"/post/vote", PostVoteHandler),
             (r"/post/election", PostElectionHandler),
             (r"/post/status", PostStatusHandler),
+            (r"/plusvote/(.*)", PlusVoteHandler),
+            (r"/minusvote/(.*)", MinusVoteHandler),
         ]
  
         tornado.web.Application.__init__(self, handlers, **settings)

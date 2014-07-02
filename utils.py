@@ -1,6 +1,7 @@
 # -*- coding: utf-8
 
 from 	markdown import markdown
+from datetime import datetime
 
 def checkClean(s):
 	if(s==None):
@@ -22,3 +23,7 @@ def clean(s):
 	if s2.endswith("</p>"):
 		s2 = s2[:-4]
 	return s2
+
+def transformDate(d):
+	tuple(datetime.now().utctimetuple())
+	return str(d)

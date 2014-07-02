@@ -42,7 +42,9 @@ class PostSpendingHandler(BaseHandler):
 			"title" : title,
 			"leader" : leader,
 			"amount" : amount,
-			"time": tuple(datetime.now().utctimetuple())
+			"time": tuple(datetime.now().utctimetuple()),
+			"plusvote": list(),
+			"minusvote": list()
 		}
 
 		db.documents.insert(new_document)

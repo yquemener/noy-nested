@@ -41,7 +41,9 @@ class PostElectionHandler(BaseHandler):
 			"author" : self.get_current_user(),
 			"togo" : togo,
 			"toenter" : toenter,
-			"time": tuple(datetime.now().utctimetuple())
+			"time": tuple(datetime.now().utctimetuple()),
+			"plusvote": list(),
+			"minusvote": list()
 		}
 
 		db.documents.insert(new_document)
