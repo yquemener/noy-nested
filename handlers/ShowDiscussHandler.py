@@ -56,14 +56,21 @@ class ShowDiscussHandler(BaseHandler):
 		d = dict()
 		for c in comments:
 			d[str(c["_id"])] = c
-		# TODO: check if some smartass makes a cyclic reference
 		for (k,v) in d.items():
+			ch = v.get("children", list())
+			newch = list()
+			print ch
+			for c in ch:
+				newch.append(d[str(c)])
+			d[k]["children"]=newch
+		# TODO: check if some smartass makes a cyclic reference
+		"""for (k,v) in d.items():
 			par = v.get("parent",None)
 			if par!=None:
 				if d[par].has_key("children"):
 					d[par]["children"].append(v)
 				else:
-					d[par]["children"] = [v]
+					d[par]["children"] = [v]"""
 		for (k,v) in d.items():
 			if v.has_key("children"):
 				v["children"].sort(cmp=lambda x,y:cmp(str(x.get("time",0)), str(y.get("time",0))))

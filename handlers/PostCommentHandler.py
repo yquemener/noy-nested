@@ -44,6 +44,9 @@ class PostCommentHandler(BaseHandler):
 			new_comment["parent"] = parent
 		if super_parent != None:
 			new_comment["super_parent"] = super_parent
-		db.comments.insert(new_comment)
+		new_id = db.comments.insert(new_comment)
+		print new_id
+		print parent
+		print db.comments.update({"_id": ObjectId(parent)}, {"$push": {"children": str(new_id)}})
 		self.redirect("/")
 
