@@ -83,7 +83,7 @@ class MainHandler(BaseHandler):
 	def get(self):
 		self.write(self.render_string("header.html"))
 		db=self.application.database
-		documents = db["documents"].find()
+		documents = list(db["documents"].find())
 		self.write("<div class='header'>\n")
 		if self.get_current_user() == None:
 			self.write("Not Logged in.<br/>\n")
@@ -92,7 +92,7 @@ class MainHandler(BaseHandler):
 			self.write("<span>Logged in as "+str(self.get_current_user())+"</span> - \n")
 			self.write("<span><a href='/logout'>Log out</a></span>")
 		self.write("</div><hr/>\n")
-		d = dict()
+		documents.sort(cmp=lambda x,y:-cmp( len(x['plusvote'])-len(x['minusvote']),  len(y['plusvote'])-len(y['minusvote'])))
 		for d in documents:
 			self.write("<div class='documentsummary'>")
 			self.write(self.createDocumentHeader(d))
