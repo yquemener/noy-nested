@@ -1,3 +1,5 @@
+- compute time deltas and show them
+
 VOTES
 - make votes a POST call rather than a GET
 - show already voted-on items

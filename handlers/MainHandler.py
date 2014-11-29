@@ -41,7 +41,7 @@ class MainHandler(BaseHandler):
 			s+="  <span class='documentsummarytype'>[Dépense]</span>\n"
 			s+="  <span class='documentsummaryamount'>["+str(doc['amount'])+"&euro;]</span>\n"
 			s+="  <span class='documentsummarytitle'><a href='/document/"
-			s+=str(doc['_id'])+"'>" +str(doc['title'])+"</a></span>\n"
+                        s+=str(doc['_id'])+"'>" + doc['title'].encode("utf-8")+"</a></span>\n"
 			s+="   par \n"
 			s+="  <span class='documentsummaryauthor'>"+str(doc['author'])+"</span>\n"
 	 		s+="   en date du \n"

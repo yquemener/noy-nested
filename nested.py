@@ -13,6 +13,7 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import tornado.web
+import time
 
 from 	markdown import markdown
  
@@ -38,7 +39,8 @@ from handlers.ShowDiscussHandler import ShowDiscussHandler
 from handlers.PlusVoteHandler import PlusVoteHandler
 from handlers.MinusVoteHandler import MinusVoteHandler
 
-
+def foo():
+    print "foo", time.time()
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -83,6 +85,7 @@ def main():
     tornado.options.parse_command_line()
     http_server = tornado.httpserver.HTTPServer(Application())
     http_server.listen(options.port)
+    tornado.ioloop.PeriodicCallback(foo, 10000).start()
     tornado.ioloop.IOLoop.instance().start()
  
  
