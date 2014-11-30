@@ -39,8 +39,6 @@ from handlers.ShowDiscussHandler import ShowDiscussHandler
 from handlers.PlusVoteHandler import PlusVoteHandler
 from handlers.MinusVoteHandler import MinusVoteHandler
 
-def foo():
-    print "foo", time.time()
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -81,11 +79,23 @@ class Application(tornado.web.Application):
         self.con = Connection('localhost', 27017)
         self.database = self.con["nested"]
  
+    def check_expiry(self):
+        db = self.database
+        print "top", time.time(), db
+        for l in db.documents.find({"expired":False}):
+            print l["content"], l["expiry"], time.time()
+            exptime = datetime(*l["expiry"][:6])
+            if datetime.now() > exptime:
+                # l has expired
+                db.documents.update({'_id': ObjectId(l['_id'])}, {"$set": {"expired" : True}})
+                
+
 def main():
     tornado.options.parse_command_line()
-    http_server = tornado.httpserver.HTTPServer(Application())
+    app = Application()
+    http_server = tornado.httpserver.HTTPServer(app)
     http_server.listen(options.port)
-    tornado.ioloop.PeriodicCallback(foo, 10000).start()
+    tornado.ioloop.PeriodicCallback(app.check_expiry, 1000).start()
     tornado.ioloop.IOLoop.instance().start()
  
  

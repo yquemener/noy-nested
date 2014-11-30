@@ -1,6 +1,6 @@
 # -*- coding: utf-8
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from pymongo.connection import Connection
 from bson.objectid import ObjectId
  
@@ -35,6 +35,9 @@ class PostSpendingHandler(BaseHandler):
 		content = clean(content)
 		title = clean(title)
 		leader = clean(leader)
+                now = datetime.now()
+                expiry = now + timedelta(days=45)
+                expiry = datetime(expiry.year, expiry.month, 1)
 		new_document = {
 			"content" : content,
 			"type" : "spending",
@@ -42,7 +45,9 @@ class PostSpendingHandler(BaseHandler):
 			"title" : title,
 			"leader" : leader,
 			"amount" : amount,
-			"time": tuple(datetime.now().utctimetuple()),
+			"time": tuple(now.utctimetuple()),
+                        "expiry": tuple(expiry.utctimetuple()),
+                        "expired": False,
 			"plusvote": list(),
 			"minusvote": list()
 		}
