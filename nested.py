@@ -81,9 +81,7 @@ class Application(tornado.web.Application):
  
     def check_expiry(self):
         db = self.database
-        print "top", time.time(), db
         for l in db.documents.find({"expired":False}):
-            print l["content"], l["expiry"], time.time()
             exptime = datetime(*l["expiry"][:6])
             if datetime.now() > exptime:
                 # l has expired

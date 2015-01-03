@@ -1,3 +1,6 @@
+# -*- coding: utf-8
+
+
 from datetime import datetime
 from pymongo.connection import Connection
 from bson.objectid import ObjectId
@@ -38,6 +41,8 @@ class ShowDiscussHandler(BaseHandler):
 		db=self.application.database
 		doc = db["documents"].find({'_id':ObjectId(path)})
 		self.write("<div class='documentheader'>\n")
+		if(doc[0].get('expired', False)):
+			self.write("<div class='expireddoc'>\n<span class='expiredtag'>[expiré]</span>")
 		if(doc[0]['type']!="election"):
 			self.write("  <div class='documenttitle'>"+doc[0]['title']+"</div>\n")
 		else:
@@ -47,6 +52,8 @@ class ShowDiscussHandler(BaseHandler):
 		self.write("   par <span class='documentauthor'>"+doc[0]['author']+"</span>\n")
 		self.write("   en date du <span class='documentdate'>"+str(datetime(*doc[0]['time'][:7]))+"</span>\n")
 		self.write("</div>")
+		if(doc[0].get('expired', False)):
+			self.write("</div>\n")
 		self.write("<div class='documentcontent'>\n")
 		self.write(doc[0]['content'])
 		self.write("</div>")

@@ -104,4 +104,11 @@ div.documentcontent {
   background-color: #fff;
 }
 
+div.expireddoc {
+	font-style: italic;
+	background-color: #eecccc;
+}
 
+span.expiredtag {
+	color:red;
+}

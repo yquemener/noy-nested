@@ -24,6 +24,8 @@ class MainHandler(BaseHandler):
 		# TODO: make a clean unicde/str conversion
 		score = len(doc['plusvote'])-len(doc['minusvote'])
 		s = ""
+		if(doc.get('expired', False)):
+			s += "<div class='expireddoc'>\n<span class='expiredtag'>[expiré]</span>"
 		if doc['type']=="discussion":
 			s+="  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
 			s+="  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
@@ -77,6 +79,8 @@ class MainHandler(BaseHandler):
 			s+="  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
 	 		s+="   en date du \n"
 			s+="  <span class='documentsummarydate'>"+str(datetime(*doc['time'][:7]))+"</span>\n"
+		if(doc.get('expired', False)):
+			s+="</div>\n"
 		return s
 
 
