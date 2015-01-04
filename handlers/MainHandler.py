@@ -1,6 +1,5 @@
 # -*- coding: utf-8
 
-from datetime import datetime
 from pymongo.connection import Connection
 from bson.objectid import ObjectId
  
@@ -13,77 +12,14 @@ import tornado.ioloop
 import tornado.options
 import tornado.web
 
-from 	markdown import markdown
+from markdown import markdown
  
 from tornado.options import define, options
 
 from handlers.BaseHandler import BaseHandler
+import tools.Renderer as Renderer
 
 class MainHandler(BaseHandler):
-	def createDocumentHeader(self, doc):
-		# TODO: make a clean unicde/str conversion
-		score = len(doc['plusvote'])-len(doc['minusvote'])
-		s = ""
-		if(doc.get('expired', False)):
-			s += "<div class='expireddoc'>\n<span class='expiredtag'>[expiré]</span>"
-		if doc['type']=="discussion":
-			s+="  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
-			s+="  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
-			s+="  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
-			s+="  <span class='documentsummarytype'>[Discussion]</span>\n"
-			s+="  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>" +doc['title']+"</a></span>\n"
-			s+="   par \n"
-			s+="  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
-	 		s+="   en date du \n"
-			s+="  <span class='documentsummarydate'>"+str(datetime(*doc['time'][:7]))+"</span>\n"
-		elif doc['type']=="spending":
-			s+="  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
-			s+="  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
-			s+="  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
-			s+="  <span class='documentsummarytype'>[Dépense]</span>\n"
-			s+="  <span class='documentsummaryamount'>["+str(doc['amount'])+"&euro;]</span>\n"
-			s+="  <span class='documentsummarytitle'><a href='/document/"
-                        s+=str(doc['_id'])+"'>" + doc['title'].encode("utf-8")+"</a></span>\n"
-			s+="   par \n"
-			s+="  <span class='documentsummaryauthor'>"+str(doc['author'])+"</span>\n"
-	 		s+="   en date du \n"
-			s+="  <span class='documentsummarydate'>"+str(datetime(*doc['time'][:7]))+"</span>\n"
-		elif doc['type']=="election":
-			s+="  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
-			s+="  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
-			s+="  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
-			s+="  <span class='documentsummarytype'>[Election]</span>\n"
-			s+=u"  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])
-			s+="'>Remplacer " +str(doc['togo'])+" par "+unicode(doc['toenter'])+"</a></span>\n"
-			s+=u"   proposé par \n"
-			s+="  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
-	 		s+="   en date du \n"
-			s+="  <span class='documentsummarydate'>"+str(datetime(*doc['time'][:7]))+"</span>\n"
-		elif doc['type']=="status":
-			s+="  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
-			s+="  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
-			s+="  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
-			s+="  <span class='documentsummarytype'>[Statuts]</span>\n"
-			s+="  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>"+doc['title']+"</a></span>\n"
-			s+=u"   proposé par \n"
-			s+="  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
-	 		s+="   en date du \n"
-			s+="  <span class='documentsummarydate'>"+str(datetime(*doc['time'][:7]))+"</span>\n"
-		elif doc['type']=="vote":
-			s+="  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
-			s+="  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
-			s+="  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
-			s+="  <span class='documentsummarytype'>[Vote]</span>\n"
-			s+="  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>"+doc['title']+"</a></span>\n"
-			s+=u"   proposé par \n"
-			s+="  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
-	 		s+="   en date du \n"
-			s+="  <span class='documentsummarydate'>"+str(datetime(*doc['time'][:7]))+"</span>\n"
-		if(doc.get('expired', False)):
-			s+="</div>\n"
-		return s
-
-
 	def get(self):
 		self.write(self.render_string("header.html"))
 		db=self.application.database
@@ -96,10 +32,17 @@ class MainHandler(BaseHandler):
 			self.write("<span>Logged in as "+str(self.get_current_user())+"</span> - \n")
 			self.write("<span><a href='/logout'>Log out</a></span>")
 		self.write("</div><hr/>\n")
+		self.write("<div class='documentslist'>")
 		documents.sort(cmp=lambda x,y:-cmp( len(x['plusvote'])-len(x['minusvote']),  len(y['plusvote'])-len(y['minusvote'])))
 		for d in documents:
 			self.write("<div class='documentsummary'>")
-			self.write(self.createDocumentHeader(d))
+			self.write(Renderer.DocumentHeader(d))
 			self.write("</div>\n")
 		self.write("<br><br><div><a href='/post'>Poster un nouveau document</a></div>")
+		self.write("</div>")
+		self.write(self.returnCurrentBudget(db, 118))
+
+	def returnCurrentBudget(self, db, revenue):
+		return Renderer.CurrentBudget(db, revenue)
+		
 

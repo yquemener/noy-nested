@@ -51,6 +51,10 @@ div.subtext {
 	font-size: x-small;  
 }
 
+div.documentslist{
+	float:left;
+}
+
 div.documentsummary{
 	font-size: x-small;
 	font-weight: normal;
@@ -96,12 +100,12 @@ span.documentdate {
 div.documentcontent {
 	font-size: small;
 	font-weight: normal;
-  margin-bottom:3px;
-  margin-left:2px;
-  padding:2px;
-  border:solid 1px blue;
-  border-radius: 5px;
-  background-color: #fff;
+	margin-bottom:3px;
+	margin-left:2px;
+	padding:2px;
+	border:solid 1px blue;
+	border-radius: 5px;
+	background-color: #fff;
 }
 
 div.expireddoc {
@@ -111,4 +115,37 @@ div.expireddoc {
 
 span.expiredtag {
 	color:red;
+}
+
+div.budget{
+	float: right;
+}
+
+table.budgetdetails
+{
+	text-align: center;
+}
+table.budgetdetails tr.validbudgetitem td.amount{
+	color:green;
+}
+table.budgetdetails tr.invalidbudgetitem{
+	background-color: #eecccc;
+}
+
+table.budgetdetails tr.invalidbudgetitem td.amount{
+	color:red;
+}
+table.budgetdetails  td.title{
+	text-align: left;
+}
+table.budgetdetails  td.title a{
+	text-decoration: none;
+}
+
+div.budget div.bottomline{
+	margin-top:20px;
+}
+
+div.budget h1{
+	font-size: large;
 }
