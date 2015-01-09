@@ -5,59 +5,60 @@ from datetime import datetime
 def DocumentHeader(doc):
 	# TODO: make a clean unicde/str conversion
 	score = len(doc['plusvote'])-len(doc['minusvote'])
-	s = ""
+	s = u""
 	if(doc.get('expired', False)):
-		s += "<div class='expireddoc'>\n<span class='expiredtag'>[expiré]</span>"
+		s += u"<div class='expireddoc'>\n<span class='expiredtag'>[expiré]</span>"
 	if doc['type']=="discussion":
-		s+="  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
-		s+="  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
-		s+="  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
-		s+="  <span class='documentsummarytype'>[Discussion]</span>\n"
-		s+="  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>" +doc['title']+"</a></span>\n"
-		s+="   par \n"
-		s+="  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
-		s+="  <span class='documentsummarydate'>en date du "+str(datetime(*doc['time'][:7]))+"</span>\n"
+		s+=u"  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
+		s+=u"  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
+		s+=u"  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
+		s+=u"  <span class='documentsummarytype'>[Discussion]</span>\n"
+		s+=u"  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>" +doc['title']+"</a></span>\n"
+		s+=u"   par \n"
+		s+=u"  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
+		s+=u"  <span class='documentsummarydate'>en date du "+HumanDate(datetime(*doc['time'][:7]))+"</span>\n"
 	elif doc['type']=="spending":
-		s+="  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
-		s+="  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
-		s+="  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
-		s+="  <span class='documentsummarytype'>[Dépense]</span>\n"
-		s+="  <span class='documentsummaryamount'>["+str(doc['amount'])+"&euro;]</span>\n"
-		s+="  <span class='documentsummarytitle'><a href='/document/"
-		s+=str(doc['_id'])+"'>" + doc['title'].encode("utf-8")+"</a></span>\n"
-		s+="   par \n"
-		s+="  <span class='documentsummaryauthor'>"+str(doc['author'])+"</span>\n"
-		s+="  <span class='documentsummarydate'>en date du "+str(datetime(*doc['time'][:7]))+"</span>\n"
+		s+=u"  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
+		s+=u"  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
+		s+=u"  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
+		s+=u"  <span class='documentsummarytype'>[Dépense]</span>\n"
+		s+=u"  <span class='documentsummaryamount'>["+str(doc['amount'])+"&euro;]</span>\n"
+		s+=u"  <span class='documentsummarytitle'><a href='/document/"
+		s+=str(doc['_id'])+"'>" + doc['title']+"</a></span>\n"
+		s+=u"   par \n"
+		s+=u"  <span class='documentsummaryauthor'>"+str(doc['author'])+"</span>\n"
+		#s+="  <span class='documentsummarydate'>en date du "+str(datetime(*doc['time'][:7]))+"</span>\n"
+		s+=u"  <span class='documentsummarydate'>"+HumanDate(datetime(*doc['time'][:7]))+"</span>\n"
 	elif doc['type']=="election":
-		s+="  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
-		s+="  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
-		s+="  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
-		s+="  <span class='documentsummarytype'>[Election]</span>\n"
+		s+=u"  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
+		s+=u"  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
+		s+=u"  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
+		s+=u"  <span class='documentsummarytype'>[Election]</span>\n"
 		s+=u"  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])
-		s+="'>Remplacer " +str(doc['togo'])+" par "+unicode(doc['toenter'])+"</a></span>\n"
+		s+=u"'>Remplacer " +str(doc['togo'])+" par "+unicode(doc['toenter'])+"</a></span>\n"
 		s+=u"   proposé par \n"
-		s+="  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
-		s+="  <span class='documentsummarydate'>en date du "+str(datetime(*doc['time'][:7]))+"</span>\n"
+		s+=u"  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
+		s+=u"  <span class='documentsummarydate'>en date du "+HumanDate(datetime(*doc['time'][:7]))+"</span>\n"
 	elif doc['type']=="status":
-		s+="  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
-		s+="  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
-		s+="  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
-		s+="  <span class='documentsummarytype'>[Statuts]</span>\n"
-		s+="  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>"+doc['title']+"</a></span>\n"
+		s+=u"  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
+		s+=u"  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
+		s+=u"  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
+		s+=u"  <span class='documentsummarytype'>[Statuts]</span>\n"
+		s+=u"  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>"+doc['title']+"</a></span>\n"
 		s+=u"   proposé par \n"
-		s+="  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
-		s+="  <span class='documentsummarydate'>en date du "+str(datetime(*doc['time'][:7]))+"</span>\n"
+		s+=u"  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
+		s+=u"  <span class='documentsummarydate'>en date du "+HumanDate(datetime(*doc['time'][:7]))+"</span>\n"
 	elif doc['type']=="vote":
-		s+="  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
-		s+="  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
-		s+="  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
-		s+="  <span class='documentsummarytype'>[Vote]</span>\n"
-		s+="  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>"+doc['title']+"</a></span>\n"
-		s+="   proposé par \n"
-		s+="  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
-		s+="  <span class='documentsummarydate'>en date du "+str(datetime(*doc['time'][:7]))+"</span>\n"
+		s+=u"  <span class='plusvotebutton'><a href='/plusvote/"+str(doc['_id'])+"'>+</a></span>"
+		s+=u"  <span class='documentsummaryscore'>"+str(score)+"</span>\n"
+		s+=u"  <span class='minusvotebutton'><a href='/minusvote/"+str(doc['_id'])+"'>-</a></span>"
+		s+=u"  <span class='documentsummarytype'>[Vote]</span>\n"
+		s+=u"  <span class='documentsummarytitle'><a href='/document/"+str(doc['_id'])+"'>"+doc['title']+"</a></span>\n"
+		s+=u"   proposé par \n"
+		s+=u"  <span class='documentsummaryauthor'>"+doc['author']+"</span>\n"
+		s+=u"  <span class='documentsummarydate'>en date du "+HumanDate(datetime(*doc['time'][:7]))+"</span>\n"
 	if(doc.get('expired', False)):
-		s+="</div>\n"
+		s+=u"</div>\n"
 	return s
 
 def CurrentBudget(db, amount):
@@ -105,5 +106,18 @@ def BudgetItem(item, valid, remains):
 	return s
 	
 def HumanDate(d):
-	s=""
+	s=u""
+	#s+=u"en date du "+unicode(d)
+	s+=u"il y a "
+	d = datetime.now()-d
+	if(d.days>30):
+	    s += str(int(d.days/30)) + " mois"
+        elif (d.days>0):
+            s += str(d.days) + " jours"
+        elif (d.seconds>3600):
+            s += str(int(d.seconds/3600)) + " heures"
+        elif (d.seconds>60):
+            s += str(int(d.seconds/60)) + " minutes"
+        else:
+            s += str(d.seconds) + " secondes"
 	return s
