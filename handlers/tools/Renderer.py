@@ -69,21 +69,17 @@ def CurrentBudget(db, amount):
 	s+=u"  <tr><td>-</td><td>-</td><td>"+ str(amount) +u" €</td></tr>\n"
 	bitems = []
 	for l in db.documents.find({"expired":False}):
-		print l
 		if l["type"]=="spending":
 			score = len(l['plusvote'])-len(l['minusvote'])
 			bitems.append([score, l])
 	bitems.sort()
 	bitems.reverse()
-	print type(s)
 	
 	for i in bitems:
 		valid = amount>=i[1]["amount"]
 		if valid:
 			amount -= i[1]["amount"]
-		print type(s)
 		s+= BudgetItem(i[1], valid, amount)
-		print type(s)
 		
 	s+=u" </table>"
 	s+=u" <div class='bottomline'>Reste reporté le mois suivant: " + str(amount) + u" € </div>"
