@@ -3,7 +3,6 @@
 from datetime import datetime
 
 def DocumentHeader(doc):
-	# TODO: make a clean unicde/str conversion
 	score = len(doc['plusvote'])-len(doc['minusvote'])
 	s = u""
 	if(doc.get('expired', False)):
@@ -66,7 +65,7 @@ def CurrentBudget(db, amount):
 	s+=u"<div class='budget'>"
 	s+=u"<h1>État du budget pour ce mois</h1>"
 	s+=u" <table class='budgetdetails'>\n"
-	s+=u"  <tr><td>Coût</td><td>Titre</td><td>Reste</td></tr>\n"
+	s+=u"  <tr><td>Coût</td><td>Score</td><td>Titre</td><td>Reste</td></tr>\n"
 	s+=u"  <tr><td>-</td><td>-</td><td>"+ str(amount) +u" €</td></tr>\n"
 	bitems = []
 	for l in db.documents.find({"expired":False}):
@@ -93,12 +92,14 @@ def CurrentBudget(db, amount):
 
 
 def BudgetItem(item, valid, remains):
+	score = len(item['plusvote'])-len(item['minusvote'])
 	s=u""
 	if(valid):
 		s+="<tr class='validbudgetitem'>\n"
 	else:
 		s+="<tr class='invalidbudgetitem'>\n"
 	s+=" <td class='amount'>" + unicode(item["amount"]) + u" €</td>\n"
+        s+=" <td class='score'>" + unicode(score) + u"</td>\n"
 	s+=" <td class='title'><a href='/document/"+str(item['_id'])+"'>" + item["title"] + "</a></td>\n"
 	
 	s+=" <td class='remain'>" + str(remains) + u" €</td>\n"
