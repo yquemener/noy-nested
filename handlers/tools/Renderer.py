@@ -75,8 +75,9 @@ def CurrentBudget(db, amount):
 	bitems.sort()
 	bitems.reverse()
 	
+        valid = True
 	for i in bitems:
-		valid = amount>=i[1]["amount"]
+		valid = valid and amount>=i[1]["amount"]
 		if valid:
 			amount -= i[1]["amount"]
 		s+= BudgetItem(i[1], valid, amount)
